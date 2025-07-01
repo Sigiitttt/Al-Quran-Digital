@@ -25,7 +25,7 @@ function Hero() {
         - Mengganti 'text-slate-500' menjadi 'text-text-secondary'
       */}
       <p className="text-lg text-text-secondary pt-3">
-        By Moch Sigit Aringga
+        By anonymous
       </p>
     </motion.div>
   );
