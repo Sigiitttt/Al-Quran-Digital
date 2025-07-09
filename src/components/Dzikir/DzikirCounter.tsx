@@ -5,51 +5,44 @@ import { motion, AnimatePresence } from "framer-motion";
 
 function DzikirCounter() {
   const [count, setCount] = useState(0);
-  const [target] = useState(33); // Kita set target default 33 untuk progress bar
+  // 1. Kembalikan state untuk target yang bisa diubah pengguna
+  const [target, setTarget] = useState(33);
 
   const increment = () => {
-    // Izinkan hitungan melebihi target jika pengguna mau
     setCount(count + 1);
   };
   
   const reset = () => {
     setCount(0);
   };
+  
+  // Fungsi untuk menangani perubahan pada input target
+  const handleTargetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTarget = parseInt(e.target.value, 10);
+    // Jika input tidak valid (bukan angka/negatif), set target ke 0
+    setTarget(isNaN(newTarget) || newTarget < 0 ? 0 : newTarget);
+  };
 
   // --- Logika untuk Circular Progress Bar ---
-  const radius = 110; // Radius lingkaran
-  const circumference = 2 * Math.PI * radius; // Keliling lingkaran
-
-  // Kalkulasi persentase dan offset untuk progress bar
+  const radius = 110;
+  const circumference = 2 * Math.PI * radius;
   const progress = useMemo(() => {
     if (target === 0) return 0;
-    // Gunakan modulo agar progress bar kembali ke 0 setelah target tercapai
     return (count % target) / target;
   }, [count, target]);
-
   const strokeDashoffset = circumference * (1 - progress);
-  // --- Akhir Logika Circular Progress Bar ---
+  // --- Akhir Logika ---
 
   return (
-    <div className="flex flex-col items-center justify-center text-center h-[70vh]">
-      {/* Kontainer Utama untuk Lingkaran dan Angka */}
+    <div className="flex flex-col items-center justify-center text-center h-[80vh]">
       <motion.div
         onClick={increment}
         whileTap={{ scale: 0.95 }}
         className="relative w-64 h-64 cursor-pointer"
       >
-        {/* SVG untuk Progress Bar Melingkar */}
+        {/* SVG Progress Bar */}
         <svg className="w-full h-full" viewBox="0 0 250 250">
-          {/* Lingkaran Latar Belakang */}
-          <circle
-            cx="125"
-            cy="125"
-            r={radius}
-            stroke="var(--color-border)"
-            strokeWidth="15"
-            fill="transparent"
-          />
-          {/* Lingkaran Progress yang Bergerak */}
+          <circle cx="125" cy="125" r={radius} stroke="var(--color-border)" strokeWidth="15" fill="transparent" />
           <motion.circle
             cx="125"
             cy="125"
@@ -66,31 +59,53 @@ function DzikirCounter() {
           />
         </svg>
 
-        {/* Tampilan Angka di Tengah Lingkaran */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <AnimatePresence>
-            <motion.h1
-              key={count}
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -30, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className="text-8xl font-bold text-text-primary"
-            >
-              {count}
-            </motion.h1>
-          </AnimatePresence>
+        {/* PERBAIKAN UTAMA: Kontainer Angka dengan Posisi Stabil */}
+        <div 
+          className="absolute inset-0 flex flex-col items-center justify-center"
+          style={{ pointerEvents: 'none' }}
+        >
+          {/* Wrapper untuk AnimatePresence agar tidak menggeser layout */}
+          <div className="relative w-full h-28 flex items-center justify-center">
+            <AnimatePresence>
+              <motion.h1
+                key={count}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -20, opacity: 0, position: 'absolute' }} // <-- Kunci agar tidak bergeser
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                className="text-8xl font-bold text-text-primary"
+              >
+                {count}
+              </motion.h1>
+            </AnimatePresence>
+          </div>
+          
+          <p className="text-lg text-text-secondary -mt-2">
+            Target: {target}
+          </p>
         </div>
       </motion.div>
       
-      {/* Tombol Reset */}
-      <motion.button
-        onClick={reset}
-        whileTap={{ scale: 0.95 }}
-        className="mt-10 bg-dark border border-border text-text-secondary font-bold py-3 px-8 rounded-lg text-lg"
-      >
-        Reset Hitungan
-      </motion.button>
+      {/* 2. Kembalikan input untuk target & tombol Reset */}
+      <div className="flex gap-4 mt-10 items-center w-full max-w-xs">
+        <input 
+          type="number"
+          value={target}
+          onChange={handleTargetChange}
+          className="w-full p-3 bg-dark text-text-primary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-center"
+          placeholder="Set Target"
+        />
+        <motion.button
+          onClick={(e) => {
+            e.stopPropagation();
+            reset();
+          }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-dark border border-border text-text-secondary font-bold py-3 px-6 rounded-lg text-base"
+        >
+          Reset
+        </motion.button>
+      </div>
     </div>
   );
 }
