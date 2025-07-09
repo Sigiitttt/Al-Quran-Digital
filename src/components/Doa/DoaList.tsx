@@ -1,6 +1,5 @@
 // src/components/Doa/DoaList.tsx
 
-import { useState } from "react";
 import type { Doa } from "../../types/Doa";
 import DoaCard from "./DoaCard";
 import { motion } from "framer-motion";
@@ -10,27 +9,30 @@ type DoaListProps = {
 };
 
 function DoaList({ doas }: DoaListProps) {
-  // State untuk melacak item mana yang sedang terbuka
-  const [activeIndex, setActiveIndex] = useState<string | null>(null);
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
 
-  const handleToggle = (id: string) => {
-    // Jika item yang sama diklik, tutup. Jika beda, buka yang baru.
-    setActiveIndex(activeIndex === id ? null : id);
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="bg-dark rounded-xl border border-border"
+      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
     >
       {doas.map((doa) => (
-        <DoaCard
-          key={doa.id}
-          doa={doa}
-          isActive={activeIndex === doa.id}
-          onToggle={() => handleToggle(doa.id)}
-        />
+        <motion.div key={doa.id} variants={itemVariants}>
+          <DoaCard doa={doa} />
+        </motion.div>
       ))}
     </motion.div>
   );
