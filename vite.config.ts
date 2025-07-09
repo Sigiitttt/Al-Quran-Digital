@@ -16,6 +16,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}']
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+      // PERBAIKAN: Menghilangkan potensi syntax error pada manifest
       manifest: {
         name: 'Al-Quran Digital',
         short_name: 'Quran App',
@@ -45,15 +46,15 @@ export default defineConfig({
       }
     })
   ],
+  // Pastikan blok server ini ada dan benar
   server: {
     proxy: {
-      // Proxy untuk API Doa (sudah ada)
       '/api-doa': {
         target: 'https://doa-doa-api-ahmadramadhan.fly.dev',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api-doa/, ''),
       },
-      // PERBAIKAN: Tambahkan proxy baru untuk API Kisah Nabi
+      // Aturan proxy untuk Kisah Nabi
       '/api-kisah': {
         target: 'https://kisah-nabi-api.vercel.app',
         changeOrigin: true,

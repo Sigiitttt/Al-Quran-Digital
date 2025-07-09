@@ -6,10 +6,9 @@ import type { Tokoh } from "../types/Kisah";
 
 function DetailKisahPage() {
   const location = useLocation();
-  // Ambil data 'tokoh' yang dikirim melalui state Link
+  // Ambil data 'tokoh' yang dikirim melalui state dari Link
   const tokoh = location.state?.tokoh as Tokoh;
 
-  // Jika pengguna mengakses halaman ini langsung (tanpa state), tampilkan pesan
   if (!tokoh) {
     return (
       <div className="p-5 md:p-8 text-center">
@@ -28,7 +27,6 @@ function DetailKisahPage() {
           ← Kembali ke Daftar Kisah
         </Link>
       </div>
-
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto">
         <img src={tokoh.image_url} alt={tokoh.name} className="w-full h-64 object-cover rounded-xl mb-6"/>
         <h1 className="text-4xl font-bold text-text-primary">{tokoh.name}</h1>
@@ -37,7 +35,6 @@ function DetailKisahPage() {
           <span>Usia: {tokoh.usia}</span>
           <span>Tempat: {tokoh.tmp}</span>
         </div>
-        {/* Menggunakan dangerouslySetInnerHTML untuk merender deskripsi HTML */}
         <div 
           className="prose prose-invert max-w-none text-text-secondary leading-relaxed"
           dangerouslySetInnerHTML={{ __html: tokoh.description }} 

@@ -10,7 +10,7 @@ type KisahCardProps = {
 
 function KisahCard({ tokoh }: KisahCardProps) {
   return (
-    // PERBAIKAN: Tambahkan prop 'state' pada Link
+    // PERBAIKAN: Tambahkan prop 'state' pada Link untuk mengirim data
     <Link to={`/kisah/${tokoh.name}`} state={{ tokoh: tokoh }}>
       <motion.div
         whileHover={{ y: -5, scale: 1.02 }}
