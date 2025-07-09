@@ -25,7 +25,6 @@ export default defineConfig({
         start_url: '.',
         display: 'standalone',
         icons: [
-          // ... (konfigurasi ikon Anda sudah benar)
           {
             src: 'pwa-192x192.png',
             sizes: '192x192',
@@ -46,19 +45,19 @@ export default defineConfig({
       }
     })
   ],
-
-  // =================================================================
-  // PERBAIKAN UTAMA DI SINI:
-  // Tambahkan blok 'server.proxy' yang hilang di bawah ini.
-  // =================================================================
   server: {
     proxy: {
-      // Jika ada permintaan ke '/api-doa', teruskan ke target di bawah
+      // Proxy untuk API Doa (sudah ada)
       '/api-doa': {
         target: 'https://doa-doa-api-ahmadramadhan.fly.dev',
         changeOrigin: true,
-        // Hapus '/api-doa' dari path sebelum dikirim ke target
         rewrite: (path) => path.replace(/^\/api-doa/, ''),
+      },
+      // PERBAIKAN: Tambahkan proxy baru untuk API Kisah Nabi
+      '/api-kisah': {
+        target: 'https://kisah-nabi-api.vercel.app',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api-kisah/, ''),
       }
     }
   }

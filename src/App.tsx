@@ -10,6 +10,8 @@ import DetailSurahPage from "./pages/DetailSurahPage";
 import DoaPage from "./pages/DoaPage";
 import DzikirPage from "./pages/DzikirPage";
 import DetailDoaPage from "./pages/DetailDoaPage";
+import KisahNabiPage from "./pages/KisahNabiPage";
+import DetailKisahPage from "./pages/DetailKisahPage";
 
 // Impor komponen tombol
 import ScrollToTopButton from "./components/ScrollToTopButton";
@@ -23,6 +25,8 @@ function App() {
         <Route path="/surah/:surahId" element={<DetailSurahPage />} />
         <Route path="/doa" element={<DoaPage />} />
         <Route path="/doa/:idDoa" element={<DetailDoaPage />} />
+        <Route path="/kisah" element={<KisahNabiPage />} />
+        <Route path="/kisah/:namaTokoh" element={<DetailKisahPage />} />
         <Route path="/dzikir" element={<DzikirPage />} />
       </Routes>
       

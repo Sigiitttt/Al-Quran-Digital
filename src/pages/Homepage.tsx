@@ -51,6 +51,11 @@ function Homepage() {
             📿 Penghitung Dzikir
           </Link>
         </motion.div>
+        <motion.div variants={itemVariants}>
+          <Link to="/kisah" className="menu-button bg-dark">
+            🕌 Kisah Nabi & Rasul
+          </Link>
+        </motion.div>
       </motion.div>
     </div>
   );

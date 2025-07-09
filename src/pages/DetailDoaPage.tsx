@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import type { Doa } from "../types/Doa"; // Pastikan path ini benar
+import type { Doa } from "../types/Doa";
 import { motion } from "framer-motion";
 
 function DetailDoaPage() {
@@ -16,12 +16,12 @@ function DetailDoaPage() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`https://doa-doa-api-ahmadramadhan.fly.dev/api/${idDoa}`);
+        // PERBAIKAN: Gunakan path proxy yang sudah disatukan
+        const response = await fetch(`/api-doa/api/${idDoa}`);
         if (!response.ok) {
           throw new Error("Gagal mengambil detail doa.");
         }
         const data = await response.json();
-        // API ini mengembalikan array, kita ambil elemen pertama
         if (Array.isArray(data) && data.length > 0) {
           setDoa(data[0]);
         } else {
