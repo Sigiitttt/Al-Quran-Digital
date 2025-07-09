@@ -1,53 +1,60 @@
 // src/components/Dzikir/DzikirCounter.tsx
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Daftar target dzikir yang umum digunakan
 const DZIKIR_GOALS = [33, 100, 1000];
 
 function DzikirCounter() {
   const [count, setCount] = useState(0);
-  const [targetIndex, setTargetIndex] = useState(0); // Indeks untuk DZIKIR_GOALS
+  const [targetIndex, setTargetIndex] = useState(0);
   const target = DZIKIR_GOALS[targetIndex];
-  
-  const isTargetReached = count > 0 && count % target === 0;
+  const [showFeedback, setShowFeedback] = useState(false);
+
+  useEffect(() => {
+    if (count > 0 && count % target === 0) {
+      setShowFeedback(true);
+      if (window.navigator.vibrate) {
+        window.navigator.vibrate(200);
+      }
+      const timer = setTimeout(() => {
+        setShowFeedback(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [count, target]);
 
   const increment = () => {
     setCount(count + 1);
-    // Beri getaran pendek setiap kali menekan
-    if (window.navigator.vibrate) {
-      window.navigator.vibrate(50);
-    }
   };
-  
+
   const reset = () => {
     setCount(0);
+    setShowFeedback(false);
   };
 
   const changeTarget = () => {
-    // Ganti target ke nilai berikutnya dalam daftar
     const nextIndex = (targetIndex + 1) % DZIKIR_GOALS.length;
     setTargetIndex(nextIndex);
-    // Reset hitungan saat ganti target agar tidak bingung
     reset();
   };
 
-  // --- Logika untuk Circular Progress Bar ---
+  // --- PERBAIKAN UTAMA DI SINI ---
+  // Urutan deklarasi variabel sudah diperbaiki.
   const radius = 110;
-  const circumference = 2 * Math.PI * radius;
+  const circumference = 2 * Math.PI * radius; // 'circumference' dibuat terlebih dahulu...
+
   const progress = useMemo(() => {
     if (target === 0) return 0;
     const currentProgress = (count % target) / target;
-    // Jika hitungan pas di target, buat progress menjadi 1 (penuh)
-    return isTargetReached ? 1 : currentProgress;
-  }, [count, target, isTargetReached]);
-  const strokeDashoffset = circumference * (1 - progress);
-  // --- Akhir Logika ---
+    return (count > 0 && count % target === 0) ? 1 : currentProgress;
+  }, [count, target]);
+  
+  const strokeDashoffset = circumference * (1 - progress); // ...baru digunakan di sini.
+  // --- Akhir Perbaikan ---
 
   return (
-    <div className="flex flex-col items-center justify-center text-center h-[80vh] px-4">
-      {/* Tombol ganti target */}
+    <div className="flex flex-col items-center justify-center text-center h-[85vh] px-4">
       <motion.button
         onClick={changeTarget}
         className="mb-8 text-text-secondary hover:text-text-primary transition-colors"
@@ -59,8 +66,7 @@ function DzikirCounter() {
         onClick={increment}
         whileTap={{ scale: 0.95 }}
         className="relative w-64 h-64 cursor-pointer"
-        // Efek denyut saat target tercapai
-        animate={{ scale: isTargetReached ? 1.05 : 1 }}
+        animate={{ scale: showFeedback ? 1.05 : 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 10 }}
       >
         <svg className="w-full h-full" viewBox="0 0 250 250">
@@ -69,13 +75,11 @@ function DzikirCounter() {
             cx="125"
             cy="125"
             r={radius}
-            // Ganti warna saat target tercapai
-            stroke={isTargetReached ? "var(--color-accent)" : "var(--color-primary)"}
+            stroke={showFeedback ? "var(--color-accent)" : "var(--color-primary)"}
             strokeWidth="15"
             fill="transparent"
             strokeLinecap="round"
             strokeDasharray={circumference}
-            initial={{ strokeDashoffset: circumference }}
             animate={{ strokeDashoffset }}
             transition={{ duration: 0.5 }}
             transform="rotate(-90 125 125)"
@@ -98,10 +102,25 @@ function DzikirCounter() {
         </div>
       </motion.div>
       
+      <div className="h-10 mt-6">
+        <AnimatePresence>
+          {showFeedback && (
+            <motion.p 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              className="text-lg text-primary font-semibold"
+            >
+              Masyaallah, target tercapai!
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+
       <motion.button
         onClick={(e) => { e.stopPropagation(); reset(); }}
         whileTap={{ scale: 0.95 }}
-        className="mt-10 bg-dark border border-border text-text-secondary font-bold py-3 px-8 rounded-lg text-lg"
+        className="bg-dark border border-border text-text-secondary font-bold py-3 px-8 rounded-lg text-lg"
       >
         Reset
       </motion.button>
