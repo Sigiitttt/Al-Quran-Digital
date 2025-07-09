@@ -2,11 +2,16 @@
 
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
+
+// Impor semua halaman Anda
 import Homepage from "./pages/Homepage";
 import DaftarSurahPage from "./pages/DaftarSurahPage";
 import DetailSurahPage from "./pages/DetailSurahPage";
 import DoaPage from "./pages/DoaPage";
 import DzikirPage from "./pages/DzikirPage";
+
+// Impor komponen tombol
+import ScrollToTopButton from "./components/ScrollToTopButton";
 
 function App() {
   return (
@@ -18,6 +23,10 @@ function App() {
         <Route path="/doa" element={<DoaPage />} />
         <Route path="/dzikir" element={<DzikirPage />} />
       </Routes>
+      
+      {/* PERBAIKAN DI SINI:
+          Pindahkan ScrollToTopButton ke luar dari blok <Routes> */}
+      <ScrollToTopButton />
     </div>
   );
 }

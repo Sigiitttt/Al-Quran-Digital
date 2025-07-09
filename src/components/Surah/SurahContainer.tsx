@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import SurahList from "./SurahList";
 import type { Surah } from "../../types/Surah";
+import Skeleton from "../Skeleton";
 
 function SurahContainer() {
   const [surahs, setSurahs] = useState<Surah[]>([]);
@@ -41,7 +42,14 @@ function SurahContainer() {
 
 
   if (isLoading) {
-    return <p className="text-center p-10 text-subtle">Memuat daftar surah...</p>;
+    return (
+      <div className="py-6 px-5 flex flex-col gap-4">
+        {/* Tampilkan 3 buah skeleton sebagai placeholder */}
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+      </div>
+    );
   }
 
   if (error) {
