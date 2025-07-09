@@ -1,23 +1,40 @@
 /* src/index.css */
-@import "tailwindcss";
+
+/* PERBAIKAN UTAMA DI SINI: Pindahkan @import font ke baris paling atas */
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap");
 
+@import "tailwindcss";
+
 @theme {
-  /* Definisikan ulang warna inti Anda agar konsisten */
+  /*
+    KONFIGURASI DESAIN UTAMA ANDA ADA DI SINI
+  */
   --color-primary: #a245fa;
   --color-accent: #ff7532;
-  --color-background: #010409; /* Warna dasar hitam pekat */
-  --color-surface: rgba(255, 255, 255, 0.04); /* Warna "kaca" untuk kartu */
-  --color-border: rgba(255, 255, 255, 0.1);  /* Border "kaca" */
+  --color-background: #010409; /* Latar belakang sangat gelap */
+  --color-dark: #161b22;         /* Warna permukaan kartu */
+  --color-border: #30363d;       /* Warna border */
   --color-text-primary: #f0f6fc; /* Warna teks utama cerah */
   --color-text-secondary: #8b949e;/* Warna sub-teks lembut */
+  
+  /* Variabel untuk Efek Hover */
+  --color-hover-bg: rgba(162, 69, 250, 0.1);
+  --color-hover-border: var(--color-primary);
 }
 
 :root {
   font-family: "Sora", sans-serif;
-  color: var(--color-text-primary);
-  background-color: var(--color-background);
+  line-height: 1.5;
+  font-weight: 400;
+
   color-scheme: dark;
+  color: var(--color-text);
+  background-color: var(--color-background);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* EFEK LATAR BELAKANG "AURORA" */
@@ -43,4 +60,25 @@ body::before {
   100% {
     transform: scale(1.5) translate(20px, -20px) rotate(10deg);
   }
+}
+
+body {
+  margin: 0;
+}
+
+.menu-button {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.menu-button:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primary);
 }
