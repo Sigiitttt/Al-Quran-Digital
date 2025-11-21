@@ -3,7 +3,7 @@
 
 Aplikasi web Al-Quran modern yang dirancang untuk memberikan pengalaman membaca dan mendengarkan Al-Quran yang nyaman, responsif, dan interaktif. Dibangun menggunakan ekosistem React dengan TypeScript untuk performa tinggi dan keamanan kode yang lebih baik.
 
-![Uploading image.png…]()
+<img width="1919" height="1047" alt="image" src="https://github.com/user-attachments/assets/a24c35e3-dae3-4b9e-ba72-b39d904459f4" />
 
 ## 📖 Tentang Proyek
 
