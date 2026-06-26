@@ -59,6 +59,13 @@ export default defineConfig({
         target: 'https://kisah-nabi-api.vercel.app',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api-kisah/, ''),
+      },
+      // Proxy Al-Quran API — hindari ERR_QUIC_PROTOCOL_ERROR
+      '/api-quran': {
+        target: 'https://equran.id',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api-quran/, ''),
       }
     }
   }
