@@ -1,7 +1,7 @@
 // src/pages/Homepage.tsx
 
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { useState, useEffect } from "react";
 
 // ── Floating particle component ─────────────────────────────
@@ -169,41 +169,6 @@ function useHijriDate() {
   return hijri;
 }
 
-// ── Menu data ──────────────────────────────────────────────
-const menuItems = [
-  {
-    to: "/quran",
-    icon: "📖",
-    label: "Baca Al-Quran",
-    desc: "114 surah lengkap dengan terjemahan",
-    stat: "114 Surah",
-    accent: true,
-  },
-  {
-    to: "/doa",
-    icon: "🤲",
-    label: "Kumpulan Doa",
-    desc: "Doa harian beserta latin & artinya",
-    stat: "37+ Doa",
-    accent: false,
-  },
-  {
-    to: "/kisah",
-    icon: "🕌",
-    label: "Kisah Nabi & Rasul",
-    desc: "Kisah inspiratif 25 nabi dan rasul",
-    stat: "25 Nabi",
-    accent: false,
-  },
-  {
-    to: "/dzikir",
-    icon: "📿",
-    label: "Penghitung Dzikir",
-    desc: "Counter dzikir digital praktis",
-    stat: "Digital",
-    accent: false,
-  },
-];
 
 // ── Twinkling star field ───────────────────────────────────
 function StarField() {
@@ -352,7 +317,7 @@ function AuroraBlobs() {
 }
 
 // ── Stagger variants ───────────────────────────────────────
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -360,11 +325,11 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20, scale: 0.97 },
   visible: {
     opacity: 1, y: 0, scale: 1,
-    transition: { type: "spring", stiffness: 260, damping: 24 },
+    transition: { type: "spring" as const, stiffness: 260, damping: 24 },
   },
 };
 

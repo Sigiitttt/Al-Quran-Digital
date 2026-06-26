@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import type { Tokoh } from "../types/Kisah";
-import KisahCard from "../components/Kisah/KisahCard";
+import KisahCard from "../components/kisah/KisahCard";
 
 function KisahNabiPage() {
   const [daftarTokoh, setDaftarTokoh] = useState<Tokoh[]>([]);
