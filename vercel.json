@@ -1,20 +1,16 @@
 {
   "rewrites": [
     {
-      "source": "/api-doa/(.*)",
-      "destination": "https://doa-doa-api-ahmadramadhan.fly.dev/$1"
+      "source": "/api-doa/:path*",
+      "destination": "https://doa-doa-api-ahmadramadhan.fly.dev/:path*"
     },
     {
-      "source": "/api-kisah/(.*)",
-      "destination": "https://kisah-nabi-api.vercel.app/$1"
+      "source": "/api-kisah/:path*",
+      "destination": "https://kisah-nabi-api.vercel.app/:path*"
     },
     {
-      "source": "/api-quran/(.*)",
-      "destination": "https://equran.id/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/api-quran/:path*",
+      "destination": "https://equran.id/:path*"
     }
   ]
 }
