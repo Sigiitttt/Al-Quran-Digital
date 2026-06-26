@@ -16,7 +16,7 @@ function DetailDoaPage() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api-doa/api/${idDoa}`);
+        const response = await fetch(`https://doa-doa-api-ahmadramadhan.fly.dev/api/${idDoa}`);
         if (!response.ok) throw new Error("Gagal mengambil detail doa.");
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {

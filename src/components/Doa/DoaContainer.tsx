@@ -21,8 +21,8 @@ function DoaContainer() {
 
     const url =
       query.trim() !== ""
-        ? `/api-doa/api/search/${encodeURIComponent(query.trim())}`
-        : "/api-doa/api";
+        ? `https://doa-doa-api-ahmadramadhan.fly.dev/api/search/${encodeURIComponent(query.trim())}`
+        : "https://doa-doa-api-ahmadramadhan.fly.dev/api";
 
     try {
       const response = await fetch(url);

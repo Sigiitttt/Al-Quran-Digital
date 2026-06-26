@@ -32,7 +32,7 @@ function DetailSurahContainer() {
     const fetchSurah = async () => {
       try {
         const response = await fetch(
-          `/api-quran/api/v2/surat/${surahId}`
+          `https://equran.id/api/v2/surat/${surahId}`
         );
         if (!response.ok) {
           throw new Error("Gagal memuat data surah");
