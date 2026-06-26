@@ -2,10 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { Doa } from "../../types/Doa";
-import { Link } from "react-router-dom"; // <-- Impor Link
-
-// Daftar pemetaan dan fungsi getIconPath tidak berubah
-// ...
+import { Link } from "react-router-dom";
 
 type DoaCardProps = {
   doa: Doa;
@@ -13,22 +10,85 @@ type DoaCardProps = {
 
 function DoaCard({ doa }: DoaCardProps) {
   return (
-    // Bungkus semua dengan komponen Link
-    <Link to={`/doa/${doa.id}`}>
-      <motion.div
-        whileHover={{ y: -5, boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }}
-        className="bg-dark border border-border rounded-xl p-6 h-full flex flex-col justify-between items-center text-center transition-colors hover:border-primary"
-      >
-        <div className="flex flex-col items-center">
-          {/* <img src={getIconPath(doa.doa)} alt={doa.doa} className="w-16 h-16 mb-4" /> */}
-          <h3 className="font-bold text-lg text-text-primary">{doa.doa}</h3>
-        </div>
-        
-        <p className="text-2xl text-primary font-arabic mt-6">
-          {doa.ayat.split(' ').slice(0, 3).join(' ')}...
-        </p>
-      </motion.div>
-    </Link>
+    <motion.div
+      whileHover={{ y: -5, scale: 1.015 }}
+      whileTap={{ scale: 0.965 }}
+      transition={{ type: "spring", stiffness: 360, damping: 28 }}
+      className="h-full"
+    >
+      <Link to={`/doa/${doa.id}`} className="block group h-full focus:outline-none">
+        <article className="doa-card h-full flex flex-col" role="article">
+
+          {/* ── Decorative elements ── */}
+          <div className="doa-card__glow-line" aria-hidden="true" />
+          <div className="doa-card__corner-glow" aria-hidden="true" />
+          <div className="doa-card__bottom-glow" aria-hidden="true" />
+
+          {/* ── Header: number badge + icon + title ── */}
+          <div className="relative z-10 flex items-start gap-3 mb-4">
+
+            {/* Numbered icon box */}
+            <div className="doa-card__icon-wrap flex-shrink-0 relative">
+              <span
+                className="text-base leading-none select-none"
+                role="img"
+                aria-label="doa"
+              >
+                🤲
+              </span>
+              {/* Number badge */}
+              <span className="doa-card__num-badge">
+                {doa.id}
+              </span>
+            </div>
+
+            {/* Title */}
+            <h3 className="doa-card__title flex-1 pt-1">
+              {doa.doa}
+            </h3>
+          </div>
+
+          {/* ── Spacer pushes footer to bottom ── */}
+          <div className="flex-1 min-h-0" />
+
+          {/* ── Arabic text block ── */}
+          <div className="relative z-10 mb-3">
+            <div className="doa-card__divider mb-3" />
+            <p
+              className="doa-card__arabic text-right leading-[2] line-clamp-2"
+              style={{ fontFamily: "'Amiri', 'Scheherazade New', serif" }}
+              lang="ar"
+              dir="rtl"
+            >
+              {doa.ayat}
+            </p>
+          </div>
+
+          {/* ── Footer: latin + arrow ── */}
+          <div className="relative z-10 flex items-center justify-between gap-2 pt-2.5 doa-card__footer-border">
+            <p className="doa-card__latin line-clamp-1 flex-1 min-w-0">
+              {doa.latin}
+            </p>
+            <div className="doa-card__arrow-wrap flex-shrink-0">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="doa-card__arrow-icon"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+
+        </article>
+      </Link>
+    </motion.div>
   );
 }
 

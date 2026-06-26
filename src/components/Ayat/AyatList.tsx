@@ -1,4 +1,5 @@
 // src/components/Ayat/AyatList.tsx
+
 import type { Ayat } from "../../types/Surah";
 import AyatCard from "./AyatCard";
 import { motion } from "framer-motion";
@@ -9,16 +10,14 @@ type AyatListProps = {
 
 function AyatList({ ayat }: AyatListProps) {
   return (
-    // Gunakan list dengan pemisah "tak terlihat" (gap) dan animasi
-    <div className="flex flex-col divide-y divide-white/10">
+    <div className="flex flex-col gap-4">
       {ayat.map((item) => (
         <motion.div
           key={item.nomorAyat}
-          className="py-10"
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }} // Muncul saat 30% kartu terlihat
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
         >
           <AyatCard ayat={item} />
         </motion.div>

@@ -9,7 +9,6 @@ import { motion } from "framer-motion";
 type DetailSurahProps = {
   surah: Surah | null;
   currentReciter: string;
-  // changeReciter DIHAPUS DARI SINI
   onPlay: () => void;
   onPause: () => void;
   audioPlaying: boolean;
@@ -19,38 +18,31 @@ type DetailSurahProps = {
 function DetailSurah({
   surah,
   currentReciter,
-  // changeReciter DIHAPUS DARI SINI
   onPlay,
   onPause,
   audioPlaying,
   openReciterModal,
 }: DetailSurahProps) {
-
   if (!surah) {
     return null;
   }
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  };
-
   return (
-    <div className="py-8 px-5 flex flex-col gap-8">
+    <div className="py-8 flex flex-col gap-6">
+      {/* Surah Info Card */}
       <motion.div
-        variants={itemVariants}
-        initial="hidden"
-        animate="visible"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <DetailSurahInfo surah={surah} />
       </motion.div>
 
+      {/* Audio Control */}
       <motion.div
-        variants={itemVariants}
-        initial="hidden"
-        animate="visible"
-        transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }}
       >
         <AudioControl
           currentReciter={currentReciter}
@@ -60,8 +52,15 @@ function DetailSurah({
           openReciterModal={openReciterModal}
         />
       </motion.div>
-      
-      <AyatList ayat={surah.ayat} />
+
+      {/* Ayat List */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <AyatList ayat={surah.ayat} />
+      </motion.div>
     </div>
   );
 }

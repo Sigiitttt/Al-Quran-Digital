@@ -2,39 +2,75 @@
 
 import type { Doa } from "../../types/Doa";
 import DoaCard from "./DoaCard";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 
 type DoaListProps = {
   doas: Doa[];
+  searchKey?: string; // key to re-trigger animation when search changes
 };
 
-function DoaList({ doas }: DoaListProps) {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 },
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.02,
     },
-  };
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.15 },
+  },
+};
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  };
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 280,
+      damping: 24,
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.94,
+    transition: { duration: 0.12 },
+  },
+};
 
+function DoaList({ doas, searchKey = "all" }: DoaListProps) {
   return (
-    <motion.div
-      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {doas.map((doa) => (
-        <motion.div key={doa.id} variants={itemVariants}>
-          <DoaCard doa={doa} />
-        </motion.div>
-      ))}
-    </motion.div>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={searchKey}
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+      >
+        <AnimatePresence mode="popLayout">
+          {doas.map((doa) => (
+            <motion.div
+              key={doa.id}
+              layout
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="h-full"
+            >
+              <DoaCard doa={doa} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

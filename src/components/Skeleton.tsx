@@ -5,10 +5,12 @@ import { motion } from "framer-motion";
 function Skeleton({ className }: { className?: string }) {
   return (
     <motion.div
-      className={`bg-dark rounded-lg ${className}`}
-      initial={{ opacity: 0.5 }}
-      animate={{ opacity: [0.5, 1, 0.5] }}
-      transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+      className={`rounded-lg ${className}`}
+      style={{
+        background: "rgba(48, 54, 61, 0.2)",
+      }}
+      animate={{ opacity: [0.3, 0.6, 0.3] }}
+      transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
     />
   );
 }
