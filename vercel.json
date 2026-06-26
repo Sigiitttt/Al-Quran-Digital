@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/api-doa/(.*)",
+      "destination": "https://doa-doa-api-ahmadramadhan.fly.dev/$1"
+    },
+    {
+      "source": "/api-kisah/(.*)",
+      "destination": "https://kisah-nabi-api.vercel.app/$1"
+    },
+    {
+      "source": "/api-quran/(.*)",
+      "destination": "https://equran.id/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
