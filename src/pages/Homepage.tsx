@@ -835,12 +835,12 @@ function Homepage() {
           >
             <div className="flex items-center gap-3 justify-center text-text-secondary/15 text-xs mb-1">
               <div className="w-10 h-px bg-text-secondary/10" />
-              <span className="tracking-widest text-[10px] uppercase">
-                Sigit Aringga
+              <span className="tracking-widest text-[15px] uppercase">
+                Anonym 😝🙏
               </span>
               <div className="w-10 h-px bg-text-secondary/10" />
             </div>
-            <p className="text-[10px] text-text-secondary/15 tracking-wide">
+            <p className="text-[12px] text-text-secondary/15 tracking-wide">
               Al-Quran Digital © 2024
             </p>
           </motion.div>

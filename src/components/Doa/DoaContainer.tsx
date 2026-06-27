@@ -65,17 +65,17 @@ function DoaContainer() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="flex items-center justify-between mb-6 px-1"
+            className="doa-stats-bar"
           >
             {/* Left: label */}
-            <div className="flex items-center gap-2.5">
+            <div className="doa-stats-bar__left">
               <div
-                className="w-1.5 h-5 rounded-full"
+                className="doa-stats-bar__indicator"
                 style={{
                   background: "linear-gradient(to bottom, #a245fa, #c97aff)",
                 }}
               />
-              <span className="text-text-secondary/40 text-xs font-medium tracking-wide">
+              <span className="doa-stats-bar__text">
                 {isSearching ? (
                   <>
                     <span className="text-primary/60">{doas.length}</span>
@@ -90,7 +90,7 @@ function DoaContainer() {
               </span>
             </div>
 
-            {/* Right: shortcut hint */}
+            {/* Right: shortcut hint (desktop only) */}
             {!isSearching && (
               <button
                 onClick={() => inputRef.current?.focus()}
@@ -113,7 +113,7 @@ function DoaContainer() {
       </AnimatePresence>
 
       {/* ══ Search Bar ══ */}
-      <div className="mb-8">
+      <div className="doa-search-wrapper">
         <motion.div
           animate={{
             boxShadow: isFocused
@@ -157,7 +157,7 @@ function DoaContainer() {
             transition={{ duration: 0.3 }}
           />
 
-          <div className="flex items-center px-5 py-3.5 gap-4">
+          <div className="doa-search__inner">
             {/* Animated search icon */}
             <motion.div
               animate={{ scale: isFocused ? 1.1 : 1 }}
@@ -169,8 +169,7 @@ function DoaContainer() {
                   stroke: isFocused ? "#a245fa" : "rgba(139,148,158,0.28)",
                 }}
                 transition={{ duration: 0.25 }}
-                width="17"
-                height="17"
+                className="doa-search__icon"
                 viewBox="0 0 24 24"
                 fill="none"
                 strokeWidth="2.5"
@@ -196,7 +195,7 @@ function DoaContainer() {
                   inputRef.current?.blur();
                 }
               }}
-              className="flex-1 bg-transparent text-text-primary text-sm placeholder:text-text-secondary/18 focus:outline-none min-w-0"
+              className="doa-search__input"
               style={{ caretColor: "#a245fa" }}
             />
 
@@ -213,7 +212,7 @@ function DoaContainer() {
                     setSearchQuery("");
                     inputRef.current?.focus();
                   }}
-                  className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-text-secondary/50 hover:text-text-primary transition-all duration-200"
+                  className="doa-search__clear-btn"
                   style={{
                     background: "rgba(48,54,61,0.35)",
                     border: "1px solid rgba(48,54,61,0.4)",
@@ -224,10 +223,10 @@ function DoaContainer() {
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
                     <path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
                   </svg>
-                  Hapus
+                  <span className="doa-search__clear-label">Hapus</span>
                 </motion.button>
               ) : totalDoas !== null ? (
-                /* Count pill */
+                /* Count pill (desktop only) */
                 <motion.div
                   key="count"
                   initial={{ opacity: 0, scale: 0.85 }}
@@ -271,7 +270,7 @@ function DoaContainer() {
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="flex flex-wrap gap-2 pt-3 px-1">
+              <div className="doa-search__tips">
                 {["makan", "tidur", "bepergian", "hujan", "belajar", "rezeki"].map(
                   (tip) => (
                     <button
@@ -280,7 +279,7 @@ function DoaContainer() {
                         e.preventDefault();
                         setSearchQuery(tip);
                       }}
-                      className="px-2.5 py-1 rounded-lg text-xs text-text-secondary/40 hover:text-primary/70 transition-all duration-200"
+                      className="doa-search__tip-btn"
                       style={{
                         background: "rgba(48,54,61,0.2)",
                         border: "1px solid rgba(48,54,61,0.3)",
@@ -304,10 +303,10 @@ function DoaContainer() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.15 } }}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+            className="doa-grid"
           >
             {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="h-44 w-full rounded-2xl" />
+              <Skeleton key={i} className="doa-skeleton-card" />
             ))}
           </motion.div>
         )}
@@ -322,22 +321,10 @@ function DoaContainer() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.97 }}
             transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="text-center py-20"
+            className="doa-state-center"
           >
-            <div
-              className="inline-flex flex-col items-center gap-4 px-10 py-8 rounded-2xl"
-              style={{
-                background: "rgba(220,38,38,0.04)",
-                border: "1px solid rgba(220,38,38,0.1)",
-              }}
-            >
-              <div
-                className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl"
-                style={{
-                  background: "rgba(220,38,38,0.06)",
-                  border: "1px solid rgba(220,38,38,0.12)",
-                }}
-              >
+            <div className="doa-state-card doa-state-card--error">
+              <div className="doa-state-card__icon doa-state-card__icon--error">
                 ⚠️
               </div>
               <div>
@@ -350,7 +337,7 @@ function DoaContainer() {
                 onClick={() => fetchDoas(searchQuery)}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-5 py-2 rounded-xl text-xs font-semibold text-primary/80 hover:text-primary transition-colors"
+                className="doa-state-card__action"
                 style={{
                   background: "rgba(162,69,250,0.08)",
                   border: "1px solid rgba(162,69,250,0.15)",
@@ -372,22 +359,17 @@ function DoaContainer() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="text-center py-24"
+            className="doa-state-center doa-state-center--empty"
           >
             <div className="inline-flex flex-col items-center gap-4">
               <motion.div
                 animate={{ rotate: [0, -8, 8, -4, 4, 0] }}
                 transition={{ duration: 1.2, delay: 0.3 }}
-                className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
-                style={{
-                  background: "rgba(162,69,250,0.06)",
-                  border: "1px solid rgba(162,69,250,0.1)",
-                  boxShadow: "0 0 30px rgba(162,69,250,0.06)",
-                }}
+                className="doa-state-card__icon doa-state-card__icon--empty"
               >
                 {isSearching ? "🔍" : "🤲"}
               </motion.div>
-              <div>
+              <div className="text-center px-4">
                 <p className="text-text-secondary/60 text-sm font-semibold mb-1">
                   {isSearching
                     ? `Tidak ada hasil untuk "${searchQuery}"`
@@ -436,7 +418,7 @@ function DoaContainer() {
                   initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  className="flex items-center gap-2 mb-5"
+                  className="doa-search-result-label"
                 >
                   <div
                     className="h-px flex-1"
@@ -444,7 +426,7 @@ function DoaContainer() {
                       background: "linear-gradient(to right, rgba(162,69,250,0.15), transparent)",
                     }}
                   />
-                  <span className="text-[11px] text-text-secondary/30 font-medium whitespace-nowrap">
+                  <span className="doa-search-result-label__text">
                     <span className="text-primary/50">{doas.length}</span> doa untuk "
                     <span className="text-text-secondary/45">{searchQuery}</span>"
                   </span>

@@ -25,12 +25,12 @@ function DoaCard({ doa }: DoaCardProps) {
           <div className="doa-card__bottom-glow" aria-hidden="true" />
 
           {/* ── Header: number badge + icon + title ── */}
-          <div className="relative z-10 flex items-start gap-3 mb-4">
+          <div className="relative z-10 doa-card__header">
 
             {/* Numbered icon box */}
             <div className="doa-card__icon-wrap flex-shrink-0 relative">
               <span
-                className="text-base leading-none select-none"
+                className="doa-card__emoji"
                 role="img"
                 aria-label="doa"
               >
@@ -43,7 +43,7 @@ function DoaCard({ doa }: DoaCardProps) {
             </div>
 
             {/* Title */}
-            <h3 className="doa-card__title flex-1 pt-1">
+            <h3 className="doa-card__title flex-1">
               {doa.doa}
             </h3>
           </div>
@@ -52,10 +52,10 @@ function DoaCard({ doa }: DoaCardProps) {
           <div className="flex-1 min-h-0" />
 
           {/* ── Arabic text block ── */}
-          <div className="relative z-10 mb-3">
-            <div className="doa-card__divider mb-3" />
+          <div className="relative z-10 doa-card__arabic-wrap">
+            <div className="doa-card__divider doa-card__divider--above-arabic" />
             <p
-              className="doa-card__arabic text-right leading-[2] line-clamp-2"
+              className="doa-card__arabic text-right line-clamp-2"
               style={{ fontFamily: "'Amiri', 'Scheherazade New', serif" }}
               lang="ar"
               dir="rtl"
@@ -65,14 +65,12 @@ function DoaCard({ doa }: DoaCardProps) {
           </div>
 
           {/* ── Footer: latin + arrow ── */}
-          <div className="relative z-10 flex items-center justify-between gap-2 pt-2.5 doa-card__footer-border">
+          <div className="relative z-10 doa-card__footer">
             <p className="doa-card__latin line-clamp-1 flex-1 min-w-0">
               {doa.latin}
             </p>
             <div className="doa-card__arrow-wrap flex-shrink-0">
               <svg
-                width="14"
-                height="14"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
