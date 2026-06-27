@@ -64,11 +64,11 @@ function usePerformanceTier(): PerfTier {
     const isMobileWidth = w <= 768;
     const isSmallPhone = w <= 380;
     const cores = navigator.hardwareConcurrency || 4;
-    const memory = (navigator as Record<string, unknown>).deviceMemory as
+    const memory = (navigator as unknown as Record<string, unknown>).deviceMemory as
       | number
       | undefined;
     const memoryGB = memory || 4;
-    const connection = (navigator as Record<string, unknown>).connection as
+    const connection = (navigator as unknown as Record<string, unknown>).connection as
       | { effectiveType?: string; saveData?: boolean }
       | undefined;
     const isSlow =
