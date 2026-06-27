@@ -4,7 +4,15 @@ import { Link } from "react-router-dom";
 import { motion, type Variants } from "framer-motion";
 import { useState, useEffect } from "react";
 
-// ── Floating particle component ─────────────────────────────
+// ── Mobile detection (runs once on mount) ──────────────────
+function useIsMobile() {
+  const [isMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth <= 768
+  );
+  return isMobile;
+}
+
+// ── Floating particle component (CSS-driven) ───────────────
 interface Particle {
   id: number;
   x: number;
@@ -15,9 +23,10 @@ interface Particle {
   opacity: number;
 }
 
-function FloatingParticles() {
-  const [particles] = useState<Particle[]>(() =>
-    Array.from({ length: 18 }, (_, i) => ({
+function FloatingParticles({ isMobile }: { isMobile: boolean }) {
+  const [particles] = useState<Particle[]>(() => {
+    const count = isMobile ? 6 : 18;
+    return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
@@ -25,47 +34,43 @@ function FloatingParticles() {
       duration: Math.random() * 8 + 6,
       delay: Math.random() * 5,
       opacity: Math.random() * 0.25 + 0.05,
-    }))
-  );
+    }));
+  });
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {particles.map((p) => (
-        <motion.div
+        <div
           key={p.id}
           className="absolute rounded-full"
-          style={{
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: p.size,
-            height: p.size,
-            background: `rgba(162,69,250,${p.opacity})`,
-            boxShadow: `0 0 ${p.size * 3}px rgba(162,69,250,${p.opacity * 1.5})`,
-          }}
-          animate={{
-            y: [-12, 12, -12],
-            x: [-6, 6, -6],
-            opacity: [p.opacity, p.opacity * 2.5, p.opacity],
-            scale: [1, 1.4, 1],
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          style={
+            {
+              left: `${p.x}%`,
+              top: `${p.y}%`,
+              width: p.size,
+              height: p.size,
+              background: `rgba(162,69,250,${p.opacity})`,
+              boxShadow: `0 0 ${p.size * 3}px rgba(162,69,250,${p.opacity * 1.5})`,
+              animation: `particleFloat ${p.duration}s ${p.delay}s ease-in-out infinite`,
+              "--pf-lo": p.opacity,
+              "--pf-hi": p.opacity * 2.5,
+            } as React.CSSProperties
+          }
         />
       ))}
     </div>
   );
 }
 
-// ── Rotating ring ornament ──────────────────────────────────
+// ── Rotating ring ornament (CSS-driven) ─────────────────────
 function BismillahRing() {
   return (
-    <div className="relative flex items-center justify-center" style={{ width: 160, height: 160 }}>
+    <div
+      className="relative flex items-center justify-center"
+      style={{ width: 160, height: 160 }}
+    >
       {/* Outer slow ring */}
-      <motion.div
+      <div
         className="absolute rounded-full"
         style={{
           width: 148,
@@ -73,78 +78,62 @@ function BismillahRing() {
           border: "1px solid rgba(162,69,250,0.12)",
           background:
             "conic-gradient(from 0deg, transparent 0%, rgba(162,69,250,0.08) 25%, transparent 50%, rgba(162,69,250,0.08) 75%, transparent 100%)",
+          animation: "ringRotateCW 28s linear infinite",
+          willChange: "transform",
         }}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
       />
       {/* Inner counter-rotate ring */}
-      <motion.div
+      <div
         className="absolute rounded-full"
         style={{
           width: 118,
           height: 118,
           border: "1px dashed rgba(162,69,250,0.15)",
+          animation: "ringRotateCCW 18s linear infinite",
+          willChange: "transform",
         }}
-        animate={{ rotate: -360 }}
-        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
       />
       {/* Glowing center pulse */}
-      <motion.div
+      <div
         className="absolute rounded-full"
         style={{
           width: 88,
           height: 88,
-          background: "radial-gradient(circle, rgba(162,69,250,0.07) 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(162,69,250,0.07) 0%, transparent 70%)",
+          animation: "centerPulse 3.5s ease-in-out infinite",
         }}
-        animate={{ scale: [1, 1.25, 1], opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
       />
       {/* Bismillah text */}
-      <motion.p
+      <p
         className="relative z-10 text-5xl md:text-6xl select-none"
         style={{
           fontFamily: "'Amiri', serif",
-          color: "rgba(162,69,250,0.55)",
-          textShadow:
-            "0 0 20px rgba(162,69,250,0.35), 0 0 60px rgba(162,69,250,0.15)",
+          animation: "bismillahGlow 3.5s ease-in-out infinite",
         }}
-        animate={{
-          textShadow: [
-            "0 0 20px rgba(162,69,250,0.25), 0 0 60px rgba(162,69,250,0.1)",
-            "0 0 30px rgba(162,69,250,0.55), 0 0 80px rgba(212,160,255,0.3)",
-            "0 0 20px rgba(162,69,250,0.25), 0 0 60px rgba(162,69,250,0.1)",
-          ],
-          color: [
-            "rgba(162,69,250,0.45)",
-            "rgba(212,160,255,0.75)",
-            "rgba(162,69,250,0.45)",
-          ],
-        }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
       >
         ﷽
-      </motion.p>
+      </p>
       {/* 4 small diamond dots at cardinal points */}
       {[0, 90, 180, 270].map((deg) => (
-        <motion.div
+        <div
           key={deg}
           className="absolute"
           style={{
-            width: 5,
-            height: 5,
-            borderRadius: 1,
-            background: "rgba(162,69,250,0.4)",
-            boxShadow: "0 0 6px rgba(162,69,250,0.5)",
             transform: `rotate(${deg}deg) translateY(-72px) rotate(-${deg}deg)`,
           }}
-          animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.3, 0.8] }}
-          transition={{
-            duration: 2,
-            delay: deg / 360,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
+        >
+          <div
+            style={{
+              width: 5,
+              height: 5,
+              borderRadius: 1,
+              background: "rgba(162,69,250,0.4)",
+              boxShadow: "0 0 6px rgba(162,69,250,0.5)",
+              animation: `dotPulse 2s ${deg / 360}s ease-in-out infinite`,
+            }}
+          />
+        </div>
       ))}
     </div>
   );
@@ -169,11 +158,11 @@ function useHijriDate() {
   return hijri;
 }
 
-
-// ── Twinkling star field ───────────────────────────────────
-function StarField() {
-  const [stars] = useState(() =>
-    Array.from({ length: 80 }, (_, i) => ({
+// ── Twinkling star field (CSS-driven) ──────────────────────
+function StarField({ isMobile }: { isMobile: boolean }) {
+  const [stars] = useState(() => {
+    const count = isMobile ? 20 : 80;
+    return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
@@ -181,53 +170,48 @@ function StarField() {
       duration: Math.random() * 4 + 2,
       delay: Math.random() * 6,
       brightness: Math.random() * 0.35 + 0.05,
-    }))
-  );
+    }));
+  });
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {stars.map((s) => (
-        <motion.div
+        <div
           key={s.id}
           className="absolute rounded-full"
-          style={{
-            left: `${s.x}%`,
-            top: `${s.y}%`,
-            width: s.size,
-            height: s.size,
-            background: `rgba(255, 230, 255, ${s.brightness})`,
-            boxShadow: `0 0 ${s.size * 2}px rgba(200,160,255,${s.brightness * 1.2})`,
-          }}
-          animate={{
-            opacity: [s.brightness * 0.2, s.brightness, s.brightness * 0.2],
-            scale: [0.6, 1.4, 0.6],
-          }}
-          transition={{
-            duration: s.duration,
-            delay: s.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          style={
+            {
+              left: `${s.x}%`,
+              top: `${s.y}%`,
+              width: s.size,
+              height: s.size,
+              background: `rgba(255, 230, 255, ${s.brightness})`,
+              boxShadow: `0 0 ${s.size * 2}px rgba(200,160,255,${s.brightness * 1.2})`,
+              animation: `starTwinkle ${s.duration}s ${s.delay}s ease-in-out infinite`,
+              "--tw-min": s.brightness * 0.2,
+              "--tw-max": s.brightness,
+            } as React.CSSProperties
+          }
         />
       ))}
     </div>
   );
 }
 
-// ── Shooting stars (CSS-driven) ──────────────────────────────
-function ShootingStars() {
-  const [stars] = useState(() =>
-    Array.from({ length: 12 }, (_, i) => ({
+// ── Shooting stars (CSS-driven, reduced on mobile) ──────────
+function ShootingStars({ isMobile }: { isMobile: boolean }) {
+  const [stars] = useState(() => {
+    const count = isMobile ? 4 : 12;
+    return Array.from({ length: count }, (_, i) => ({
       id: i,
       startX: Math.random() * 85 + 2,
       startY: Math.random() * 45,
       length: Math.random() * 140 + 70,
       duration: (Math.random() * 1.2 + 0.7).toFixed(2),
       delay: (Math.random() * 20 + i * 1.8).toFixed(2),
-      repeatDelay: (Math.random() * 12 + 6).toFixed(2),
       angle: Math.random() * 25 + 28,
-    }))
-  );
+    }));
+  });
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -249,74 +233,69 @@ function ShootingStars() {
   );
 }
 
-// ── Aurora blobs ────────────────────────────────────────────
-function AuroraBlobs() {
+// ── Aurora blobs (CSS-driven, simplified on mobile) ─────────
+function AuroraBlobs({ isMobile }: { isMobile: boolean }) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {/* Top aurora — drifts left-right */}
-      <motion.div
-        className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1000px] h-[700px] rounded-full"
+      {/* Top aurora */}
+      <div
+        className="absolute -top-40 left-1/2 rounded-full"
         style={{
+          width: isMobile ? 500 : 1000,
+          height: isMobile ? 350 : 700,
+          transform: "translateX(-50%)",
           background:
             "radial-gradient(ellipse at 50% 0%, rgba(162,69,250,0.14) 0%, rgba(100,30,200,0.06) 40%, transparent 70%)",
-          filter: "blur(70px)",
+          filter: isMobile ? "blur(40px)" : "blur(70px)",
+          animation: "auroraTop 16s ease-in-out infinite",
+          willChange: "transform, opacity",
         }}
-        animate={{
-          x: [-60, 60, -60],
-          scale: [1, 1.08, 1],
-          opacity: [0.8, 1, 0.8],
-        }}
-        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
       />
-      {/* Mid left blob — drifts diagonally */}
-      <motion.div
-        className="absolute top-1/3 -left-48 w-[600px] h-[600px] rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(139,44,245,0.09) 0%, transparent 65%)",
-          filter: "blur(90px)",
-        }}
-        animate={{
-          x: [-20, 30, -20],
-          y: [-20, 20, -20],
-          opacity: [0.6, 1, 0.6],
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-      />
-      {/* Mid right blob */}
-      <motion.div
-        className="absolute top-1/2 -right-48 w-[500px] h-[500px] rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(180,80,255,0.07) 0%, transparent 65%)",
-          filter: "blur(80px)",
-        }}
-        animate={{
-          x: [20, -30, 20],
-          y: [15, -15, 15],
-          opacity: [0.5, 0.9, 0.5],
-        }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 6 }}
-      />
+      {/* Mid left blob — desktop only */}
+      {!isMobile && (
+        <div
+          className="absolute top-1/3 -left-48 w-[600px] h-[600px] rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(139,44,245,0.09) 0%, transparent 65%)",
+            filter: "blur(90px)",
+            animation: "auroraLeft 20s 3s ease-in-out infinite",
+            willChange: "transform, opacity",
+          }}
+        />
+      )}
+      {/* Mid right blob — desktop only */}
+      {!isMobile && (
+        <div
+          className="absolute top-1/2 -right-48 w-[500px] h-[500px] rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(180,80,255,0.07) 0%, transparent 65%)",
+            filter: "blur(80px)",
+            animation: "auroraRight 18s 6s ease-in-out infinite",
+            willChange: "transform, opacity",
+          }}
+        />
+      )}
       {/* Bottom center glow */}
-      <motion.div
-        className="absolute -bottom-32 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full"
+      <div
+        className="absolute -bottom-32 left-1/2 rounded-full"
         style={{
+          width: isMobile ? 400 : 800,
+          height: isMobile ? 200 : 400,
+          transform: "translateX(-50%)",
           background:
             "radial-gradient(ellipse at 50% 100%, rgba(100,20,180,0.08) 0%, transparent 65%)",
-          filter: "blur(80px)",
+          filter: isMobile ? "blur(40px)" : "blur(80px)",
+          animation: "auroraBottom 12s 2s ease-in-out infinite",
+          willChange: "transform, opacity",
         }}
-        animate={{
-          scaleX: [1, 1.15, 1],
-          opacity: [0.6, 1, 0.6],
-        }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
       />
     </div>
   );
 }
 
-// ── Stagger variants ───────────────────────────────────────
+// ── Stagger variants (one-time entrance — keep framer-motion) ─
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -328,7 +307,9 @@ const containerVariants: Variants = {
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20, scale: 0.97 },
   visible: {
-    opacity: 1, y: 0, scale: 1,
+    opacity: 1,
+    y: 0,
+    scale: 1,
     transition: { type: "spring" as const, stiffness: 260, damping: 24 },
   },
 };
@@ -336,20 +317,20 @@ const itemVariants: Variants = {
 // ══════════════════════════════════════════════════════════
 function Homepage() {
   const hijri = useHijriDate();
+  const isMobile = useIsMobile();
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-
       {/* ── Layered background ── */}
       <div className="pointer-events-none fixed inset-0 z-0">
         {/* Animated aurora blobs */}
-        <AuroraBlobs />
+        <AuroraBlobs isMobile={isMobile} />
 
         {/* Twinkling star field */}
-        <StarField />
+        <StarField isMobile={isMobile} />
 
         {/* Shooting stars */}
-        <ShootingStars />
+        <ShootingStars isMobile={isMobile} />
 
         {/* Subtle grid pattern */}
         <div
@@ -361,26 +342,21 @@ function Homepage() {
           }}
         />
 
-        {/* Scan line shimmer — very subtle moving line */}
-        <motion.div
-          className="absolute inset-x-0 h-[2px] pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent 0%, rgba(162,69,250,0.06) 40%, rgba(200,150,255,0.12) 50%, rgba(162,69,250,0.06) 60%, transparent 100%)",
-          }}
-          animate={{ top: ["-2px", "100vh"] }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "linear",
-            repeatDelay: 5,
-          }}
-        />
+        {/* Scan line shimmer — skip on mobile for perf */}
+        {!isMobile && (
+          <div
+            className="absolute inset-x-0 top-0 h-[2px] pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent 0%, rgba(162,69,250,0.06) 40%, rgba(200,150,255,0.12) 50%, rgba(162,69,250,0.06) 60%, transparent 100%)",
+              animation: "scanLineMove 15s linear infinite",
+            }}
+          />
+        )}
       </div>
 
       {/* ── Main layout ── */}
       <div className="relative z-10 min-h-screen flex flex-col">
-
         {/* ── Top bar ── */}
         <motion.header
           initial={{ opacity: 0, y: -10 }}
@@ -426,15 +402,20 @@ function Homepage() {
 
         {/* ── Hero section ── */}
         <div className="flex-1 flex flex-col items-center justify-center px-6 md:px-12 lg:px-20 py-12 md:py-16 relative">
-
           {/* Floating particles */}
-          <FloatingParticles />
+          <FloatingParticles isMobile={isMobile} />
 
           {/* Bismillah with ring ornament */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.1, type: "spring", stiffness: 120, damping: 18 }}
+            transition={{
+              duration: 0.9,
+              delay: 0.1,
+              type: "spring",
+              stiffness: 120,
+              damping: 18,
+            }}
             className="mb-6 text-center"
           >
             <BismillahRing />
@@ -451,9 +432,7 @@ function Homepage() {
           </motion.div>
 
           {/* Headline */}
-          <motion.div
-            className="text-center mb-4 max-w-2xl"
-          >
+          <motion.div className="text-center mb-4 max-w-2xl">
             {/* Word-by-word stagger */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1] tracking-tight text-text-primary">
               {["Baca,", "Hafal", "&"].map((word, i) => (
@@ -466,15 +445,20 @@ function Homepage() {
                 >
                   {word}
                 </motion.span>
-              ))}
-              {" "}
+              ))}{" "}
               <motion.span
                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.65, type: "spring", stiffness: 200 }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.65,
+                  type: "spring",
+                  stiffness: 200,
+                }}
                 style={{
                   display: "inline-block",
-                  background: "linear-gradient(135deg, #8b2cf5 0%, #a245fa 40%, #d4a0ff 70%, #a245fa 100%)",
+                  background:
+                    "linear-gradient(135deg, #8b2cf5 0%, #a245fa 40%, #d4a0ff 70%, #a245fa 100%)",
                   backgroundSize: "200% 200%",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -494,7 +478,8 @@ function Homepage() {
               style={{
                 height: 1,
                 width: 80,
-                background: "linear-gradient(90deg, transparent, rgba(162,69,250,0.5), transparent)",
+                background:
+                  "linear-gradient(90deg, transparent, rgba(162,69,250,0.5), transparent)",
                 transformOrigin: "center",
               }}
             />
@@ -505,7 +490,8 @@ function Homepage() {
               transition={{ duration: 0.6, delay: 1.0 }}
               className="mt-4 text-text-secondary/45 text-base md:text-lg leading-relaxed max-w-lg mx-auto"
             >
-              Panduan lengkap membaca Al-Quran, doa harian, dzikir, dan kisah para nabi dalam satu aplikasi.
+              Panduan lengkap membaca Al-Quran, doa harian, dzikir, dan kisah
+              para nabi dalam satu aplikasi.
             </motion.p>
 
             {/* Animated stats pills */}
@@ -550,12 +536,8 @@ function Homepage() {
           >
             {/* Top row: Featured (Al-Quran) large + two cards */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-
               {/* ── Featured card: Al-Quran ── */}
-              <motion.div
-                variants={itemVariants}
-                className="lg:col-span-2"
-              >
+              <motion.div variants={itemVariants} className="lg:col-span-2">
                 <Link to="/quran" className="group block">
                   <motion.div
                     whileHover={{ y: -4, scale: 1.01 }}
@@ -594,7 +576,16 @@ function Homepage() {
                         <span>Terjemahan</span>
                       </div>
                       <div className="homepage-card__arrow-wrap">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
                       </div>
@@ -618,13 +609,22 @@ function Homepage() {
                       <span className="text-3xl block mb-3">🤲</span>
                       <h2 className="homepage-card__title">Kumpulan Doa</h2>
                       <p className="homepage-card__desc mt-1">
-                        Doa harian beserta latin & artinya
+                        Doa harian beserta latin &amp; artinya
                       </p>
                     </div>
                     <div className="relative z-10 flex items-center justify-between mt-6">
                       <span className="homepage-card__stat">37+ Doa</span>
                       <div className="homepage-card__arrow-wrap">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
                       </div>
@@ -636,7 +636,6 @@ function Homepage() {
 
             {/* Bottom row: two equal cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
               {/* ── Kisah Nabi ── */}
               <motion.div variants={itemVariants}>
                 <Link to="/kisah" className="group block">
@@ -651,7 +650,9 @@ function Homepage() {
                     <div className="relative z-10 flex items-start gap-3">
                       <span className="text-2xl flex-shrink-0">🕌</span>
                       <div>
-                        <h2 className="homepage-card__title">Kisah Nabi & Rasul</h2>
+                        <h2 className="homepage-card__title">
+                          Kisah Nabi &amp; Rasul
+                        </h2>
                         <p className="homepage-card__desc mt-1">
                           Kisah inspiratif 25 nabi dan rasul pilihan
                         </p>
@@ -660,7 +661,16 @@ function Homepage() {
                     <div className="relative z-10 flex items-center justify-between mt-5">
                       <span className="homepage-card__stat">25 Nabi</span>
                       <div className="homepage-card__arrow-wrap">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
                       </div>
@@ -683,7 +693,9 @@ function Homepage() {
                     <div className="relative z-10 flex items-start gap-3">
                       <span className="text-2xl flex-shrink-0">📿</span>
                       <div>
-                        <h2 className="homepage-card__title">Penghitung Dzikir</h2>
+                        <h2 className="homepage-card__title">
+                          Penghitung Dzikir
+                        </h2>
                         <p className="homepage-card__desc mt-1">
                           Counter dzikir digital dengan getaran
                         </p>
@@ -692,7 +704,16 @@ function Homepage() {
                     <div className="relative z-10 flex items-center justify-between mt-5">
                       <span className="homepage-card__stat">Digital</span>
                       <div className="homepage-card__arrow-wrap">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
                       </div>
@@ -712,7 +733,9 @@ function Homepage() {
           >
             <div className="flex items-center gap-3 justify-center text-text-secondary/15 text-xs mb-1">
               <div className="w-10 h-px bg-text-secondary/10" />
-              <span className="tracking-widest text-[10px] uppercase">Sigit Aringga</span>
+              <span className="tracking-widest text-[10px] uppercase">
+                Sigit Aringga
+              </span>
               <div className="w-10 h-px bg-text-secondary/10" />
             </div>
             <p className="text-[10px] text-text-secondary/15 tracking-wide">

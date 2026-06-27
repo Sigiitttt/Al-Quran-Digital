@@ -32,6 +32,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Aurora background - very subtle */
 body::before {
   content: '';
@@ -105,6 +110,123 @@ body::before {
 
 body {
   margin: 0;
+}
+
+/* ══════════════════════════════════════ */
+/* GPU-ACCELERATED KEYFRAMES (mobile perf) */
+/* ══════════════════════════════════════ */
+
+/* ── Star twinkle (uses CSS custom properties) ── */
+@keyframes starTwinkle {
+  0%, 100% {
+    opacity: var(--tw-min, 0.05);
+    transform: scale(0.6) translate3d(0, 0, 0);
+  }
+  50% {
+    opacity: var(--tw-max, 0.35);
+    transform: scale(1.4) translate3d(0, 0, 0);
+  }
+}
+
+/* ── Particle float ── */
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translate3d(-6px, -12px, 0) scale(1);
+    opacity: var(--pf-lo, 0.1);
+  }
+  33% {
+    transform: translate3d(6px, 4px, 0) scale(1.4);
+    opacity: var(--pf-hi, 0.25);
+  }
+  66% {
+    transform: translate3d(-4px, 12px, 0) scale(1.1);
+    opacity: var(--pf-lo, 0.1);
+  }
+}
+
+/* ── Ring rotations ── */
+@keyframes ringRotateCW {
+  from { transform: rotate(0deg) translate3d(0, 0, 0); }
+  to   { transform: rotate(360deg) translate3d(0, 0, 0); }
+}
+
+@keyframes ringRotateCCW {
+  from { transform: rotate(0deg) translate3d(0, 0, 0); }
+  to   { transform: rotate(-360deg) translate3d(0, 0, 0); }
+}
+
+/* ── Center pulse ── */
+@keyframes centerPulse {
+  0%, 100% { transform: scale(1) translate3d(0, 0, 0); opacity: 0.5; }
+  50%      { transform: scale(1.25) translate3d(0, 0, 0); opacity: 1; }
+}
+
+/* ── Bismillah text glow ── */
+@keyframes bismillahGlow {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(162,69,250,0.25), 0 0 60px rgba(162,69,250,0.1);
+    color: rgba(162,69,250,0.45);
+  }
+  50% {
+    text-shadow: 0 0 30px rgba(162,69,250,0.55), 0 0 80px rgba(212,160,255,0.3);
+    color: rgba(212,160,255,0.75);
+  }
+}
+
+/* ── Cardinal dot pulse ── */
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8) translate3d(0, 0, 0); }
+  50%      { opacity: 1;   transform: scale(1.3) translate3d(0, 0, 0); }
+}
+
+/* ── Aurora blob drifts ── */
+@keyframes auroraTop {
+  0%, 100% { transform: translateX(calc(-50% - 60px)) scale(1);    opacity: 0.8; }
+  50%      { transform: translateX(calc(-50% + 60px)) scale(1.08); opacity: 1; }
+}
+
+@keyframes auroraLeft {
+  0%, 100% { transform: translate3d(-20px, -20px, 0); opacity: 0.6; }
+  50%      { transform: translate3d(30px, 20px, 0);   opacity: 1; }
+}
+
+@keyframes auroraRight {
+  0%, 100% { transform: translate3d(20px, 15px, 0);   opacity: 0.5; }
+  50%      { transform: translate3d(-30px, -15px, 0); opacity: 0.9; }
+}
+
+@keyframes auroraBottom {
+  0%, 100% { transform: translateX(-50%) scaleX(1);    opacity: 0.6; }
+  50%      { transform: translateX(-50%) scaleX(1.15); opacity: 1; }
+}
+
+/* ── Scan line ── */
+@keyframes scanLineMove {
+  0%     { transform: translateY(-2px); opacity: 1; }
+  60%    { transform: translateY(100vh); opacity: 0.5; }
+  60.1%  { opacity: 0; }
+  99.9%  { transform: translateY(-2px); opacity: 0; }
+  100%   { transform: translateY(-2px); opacity: 0; }
+}
+
+/* ── Reduced motion: disable all decorative animations ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Mobile: lighten backdrop-filter for perf ── */
+@media (max-width: 768px) {
+  .homepage-card {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 }
 
 .menu-button {
