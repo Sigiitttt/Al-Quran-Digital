@@ -146,7 +146,7 @@ function FloatingParticles({ config }: { config: TierConfig }) {
 function BismillahRing({ animate }: { animate: boolean }) {
   return (
     <div
-      className="relative flex items-center justify-center"
+      className="relative flex items-center justify-center mx-auto"
       style={{ width: 160, height: 160 }}
     >
       {/* Outer slow ring */}

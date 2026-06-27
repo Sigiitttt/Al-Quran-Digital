@@ -16,7 +16,7 @@ function SurahContainer() {
   useEffect(() => {
     const fetchSurahs = async () => {
       try {
-        const response = await fetch("https://equran.id/api/v2/surat");
+        const response = await fetch("/api-quran/api/v2/surat");
         if (!response.ok) throw new Error("Gagal mengambil daftar surah");
         const data = await response.json();
         setSurahs(data.data);

@@ -195,7 +195,11 @@ Aplikasi ini mendukung **PWA** (Progressive Web App) — bisa di-install di HP s
 **Al-Quran Digital** © 2025 — Sigit 
 
 *بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ*
-**dilarang menduplikasi**
+
+
+
+
+# **dilarang menduplikasi**
 
 </div>
 

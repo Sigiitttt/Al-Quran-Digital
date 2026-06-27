@@ -15,7 +15,7 @@ function KisahNabiPage() {
     const fetchKisah = async () => {
       try {
         // Memanggil path proxy yang benar
-        const response = await fetch('https://kisah-nabi-api.vercel.app/api/kisahnabi');
+        const response = await fetch('/api-kisah/api/kisahnabi');
         if (!response.ok) {
           throw new Error("Gagal memuat data kisah. Server mungkin sedang bermasalah.");
         }
