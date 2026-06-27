@@ -4,12 +4,93 @@ import { Link } from "react-router-dom";
 import { motion, type Variants } from "framer-motion";
 import { useState, useEffect } from "react";
 
-// ── Mobile detection (runs once on mount) ──────────────────
-function useIsMobile() {
-  const [isMobile] = useState(
-    () => typeof window !== "undefined" && window.innerWidth <= 768
-  );
-  return isMobile;
+// ══════════════════════════════════════════════════════════
+// PERFORMANCE TIER SYSTEM
+// Detects device capability — not just screen width.
+// Works across all brands: Samsung, Xiaomi, Oppo, iPhone, etc.
+// ══════════════════════════════════════════════════════════
+
+type PerfTier = "high" | "medium" | "low";
+
+interface TierConfig {
+  stars: number;
+  particles: number;
+  shootingStars: number;
+  auroraBlobs: "full" | "minimal" | "none";
+  scanLine: boolean;
+  gridPattern: boolean;
+  blurAmount: number; // px for aurora blur
+  ringAnimation: boolean;
+}
+
+const TIER_CONFIG: Record<PerfTier, TierConfig> = {
+  high: {
+    stars: 80,
+    particles: 18,
+    shootingStars: 12,
+    auroraBlobs: "full",
+    scanLine: true,
+    gridPattern: true,
+    blurAmount: 70,
+    ringAnimation: true,
+  },
+  medium: {
+    stars: 25,
+    particles: 8,
+    shootingStars: 5,
+    auroraBlobs: "minimal",
+    scanLine: false,
+    gridPattern: true,
+    blurAmount: 35,
+    ringAnimation: true,
+  },
+  low: {
+    stars: 10,
+    particles: 3,
+    shootingStars: 2,
+    auroraBlobs: "none",
+    scanLine: false,
+    gridPattern: false,
+    blurAmount: 20,
+    ringAnimation: true,
+  },
+};
+
+function usePerformanceTier(): PerfTier {
+  const [tier] = useState<PerfTier>(() => {
+    if (typeof window === "undefined") return "high";
+
+    const w = window.innerWidth;
+    const isMobileWidth = w <= 768;
+    const isSmallPhone = w <= 380;
+    const cores = navigator.hardwareConcurrency || 4;
+    const memory = (navigator as Record<string, unknown>).deviceMemory as
+      | number
+      | undefined;
+    const memoryGB = memory || 4;
+    const connection = (navigator as Record<string, unknown>).connection as
+      | { effectiveType?: string; saveData?: boolean }
+      | undefined;
+    const isSlow =
+      connection?.effectiveType === "2g" ||
+      connection?.effectiveType === "slow-2g";
+    const isSaveData = connection?.saveData === true;
+
+    // ── LOW tier: small/slow phones, low RAM, or data-saver ──
+    if (isSmallPhone || (isMobileWidth && cores <= 4) || memoryGB <= 2 || isSlow || isSaveData) {
+      return "low";
+    }
+
+    // ── MEDIUM tier: normal phones & tablets ──
+    if (isMobileWidth || (cores <= 6 && memoryGB <= 4)) {
+      return "medium";
+    }
+
+    // ── HIGH tier: desktop / laptop / powerful tablet ──
+    return "high";
+  });
+
+  return tier;
 }
 
 // ── Floating particle component (CSS-driven) ───────────────
@@ -23,10 +104,9 @@ interface Particle {
   opacity: number;
 }
 
-function FloatingParticles({ isMobile }: { isMobile: boolean }) {
-  const [particles] = useState<Particle[]>(() => {
-    const count = isMobile ? 6 : 18;
-    return Array.from({ length: count }, (_, i) => ({
+function FloatingParticles({ config }: { config: TierConfig }) {
+  const [particles] = useState<Particle[]>(() =>
+    Array.from({ length: config.particles }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
@@ -34,8 +114,8 @@ function FloatingParticles({ isMobile }: { isMobile: boolean }) {
       duration: Math.random() * 8 + 6,
       delay: Math.random() * 5,
       opacity: Math.random() * 0.25 + 0.05,
-    }));
-  });
+    }))
+  );
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -63,7 +143,7 @@ function FloatingParticles({ isMobile }: { isMobile: boolean }) {
 }
 
 // ── Rotating ring ornament (CSS-driven) ─────────────────────
-function BismillahRing() {
+function BismillahRing({ animate }: { animate: boolean }) {
   return (
     <div
       className="relative flex items-center justify-center"
@@ -78,8 +158,8 @@ function BismillahRing() {
           border: "1px solid rgba(162,69,250,0.12)",
           background:
             "conic-gradient(from 0deg, transparent 0%, rgba(162,69,250,0.08) 25%, transparent 50%, rgba(162,69,250,0.08) 75%, transparent 100%)",
-          animation: "ringRotateCW 28s linear infinite",
-          willChange: "transform",
+          animation: animate ? "ringRotateCW 28s linear infinite" : "none",
+          willChange: animate ? "transform" : "auto",
         }}
       />
       {/* Inner counter-rotate ring */}
@@ -89,8 +169,8 @@ function BismillahRing() {
           width: 118,
           height: 118,
           border: "1px dashed rgba(162,69,250,0.15)",
-          animation: "ringRotateCCW 18s linear infinite",
-          willChange: "transform",
+          animation: animate ? "ringRotateCCW 18s linear infinite" : "none",
+          willChange: animate ? "transform" : "auto",
         }}
       />
       {/* Glowing center pulse */}
@@ -159,10 +239,9 @@ function useHijriDate() {
 }
 
 // ── Twinkling star field (CSS-driven) ──────────────────────
-function StarField({ isMobile }: { isMobile: boolean }) {
-  const [stars] = useState(() => {
-    const count = isMobile ? 20 : 80;
-    return Array.from({ length: count }, (_, i) => ({
+function StarField({ config }: { config: TierConfig }) {
+  const [stars] = useState(() =>
+    Array.from({ length: config.stars }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
@@ -170,8 +249,8 @@ function StarField({ isMobile }: { isMobile: boolean }) {
       duration: Math.random() * 4 + 2,
       delay: Math.random() * 6,
       brightness: Math.random() * 0.35 + 0.05,
-    }));
-  });
+    }))
+  );
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -198,11 +277,10 @@ function StarField({ isMobile }: { isMobile: boolean }) {
   );
 }
 
-// ── Shooting stars (CSS-driven, reduced on mobile) ──────────
-function ShootingStars({ isMobile }: { isMobile: boolean }) {
-  const [stars] = useState(() => {
-    const count = isMobile ? 4 : 12;
-    return Array.from({ length: count }, (_, i) => ({
+// ── Shooting stars (CSS-driven) ─────────────────────────────
+function ShootingStars({ config }: { config: TierConfig }) {
+  const [stars] = useState(() =>
+    Array.from({ length: config.shootingStars }, (_, i) => ({
       id: i,
       startX: Math.random() * 85 + 2,
       startY: Math.random() * 45,
@@ -210,8 +288,8 @@ function ShootingStars({ isMobile }: { isMobile: boolean }) {
       duration: (Math.random() * 1.2 + 0.7).toFixed(2),
       delay: (Math.random() * 20 + i * 1.8).toFixed(2),
       angle: Math.random() * 25 + 28,
-    }));
-  });
+    }))
+  );
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -233,26 +311,47 @@ function ShootingStars({ isMobile }: { isMobile: boolean }) {
   );
 }
 
-// ── Aurora blobs (CSS-driven, simplified on mobile) ─────────
-function AuroraBlobs({ isMobile }: { isMobile: boolean }) {
+// ── Aurora blobs (CSS-driven, tier-aware) ───────────────────
+function AuroraBlobs({ config }: { config: TierConfig }) {
+  if (config.auroraBlobs === "none") {
+    // LOW tier: just a simple static gradient, no animation at all
+    return (
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          className="absolute -top-20 left-1/2 rounded-full"
+          style={{
+            width: 400,
+            height: 300,
+            transform: "translateX(-50%)",
+            background:
+              "radial-gradient(ellipse at 50% 0%, rgba(162,69,250,0.1) 0%, transparent 70%)",
+            filter: `blur(${config.blurAmount}px)`,
+          }}
+        />
+      </div>
+    );
+  }
+
+  const isFull = config.auroraBlobs === "full";
+
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {/* Top aurora */}
+      {/* Top aurora — always shown */}
       <div
         className="absolute -top-40 left-1/2 rounded-full"
         style={{
-          width: isMobile ? 500 : 1000,
-          height: isMobile ? 350 : 700,
+          width: isFull ? 1000 : 500,
+          height: isFull ? 700 : 350,
           transform: "translateX(-50%)",
           background:
             "radial-gradient(ellipse at 50% 0%, rgba(162,69,250,0.14) 0%, rgba(100,30,200,0.06) 40%, transparent 70%)",
-          filter: isMobile ? "blur(40px)" : "blur(70px)",
+          filter: `blur(${config.blurAmount}px)`,
           animation: "auroraTop 16s ease-in-out infinite",
           willChange: "transform, opacity",
         }}
       />
       {/* Mid left blob — desktop only */}
-      {!isMobile && (
+      {isFull && (
         <div
           className="absolute top-1/3 -left-48 w-[600px] h-[600px] rounded-full"
           style={{
@@ -265,7 +364,7 @@ function AuroraBlobs({ isMobile }: { isMobile: boolean }) {
         />
       )}
       {/* Mid right blob — desktop only */}
-      {!isMobile && (
+      {isFull && (
         <div
           className="absolute top-1/2 -right-48 w-[500px] h-[500px] rounded-full"
           style={{
@@ -281,12 +380,12 @@ function AuroraBlobs({ isMobile }: { isMobile: boolean }) {
       <div
         className="absolute -bottom-32 left-1/2 rounded-full"
         style={{
-          width: isMobile ? 400 : 800,
-          height: isMobile ? 200 : 400,
+          width: isFull ? 800 : 400,
+          height: isFull ? 400 : 200,
           transform: "translateX(-50%)",
           background:
             "radial-gradient(ellipse at 50% 100%, rgba(100,20,180,0.08) 0%, transparent 65%)",
-          filter: isMobile ? "blur(40px)" : "blur(80px)",
+          filter: `blur(${config.blurAmount}px)`,
           animation: "auroraBottom 12s 2s ease-in-out infinite",
           willChange: "transform, opacity",
         }}
@@ -317,33 +416,36 @@ const itemVariants: Variants = {
 // ══════════════════════════════════════════════════════════
 function Homepage() {
   const hijri = useHijriDate();
-  const isMobile = useIsMobile();
+  const tier = usePerformanceTier();
+  const config = TIER_CONFIG[tier];
 
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* ── Layered background ── */}
       <div className="pointer-events-none fixed inset-0 z-0">
         {/* Animated aurora blobs */}
-        <AuroraBlobs isMobile={isMobile} />
+        <AuroraBlobs config={config} />
 
         {/* Twinkling star field */}
-        <StarField isMobile={isMobile} />
+        <StarField config={config} />
 
         {/* Shooting stars */}
-        <ShootingStars isMobile={isMobile} />
+        <ShootingStars config={config} />
 
-        {/* Subtle grid pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.018]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(162,69,250,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(162,69,250,0.8) 1px, transparent 1px)",
-            backgroundSize: "80px 80px",
-          }}
-        />
+        {/* Subtle grid pattern — skip on low tier */}
+        {config.gridPattern && (
+          <div
+            className="absolute inset-0 opacity-[0.018]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(162,69,250,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(162,69,250,0.8) 1px, transparent 1px)",
+              backgroundSize: "80px 80px",
+            }}
+          />
+        )}
 
-        {/* Scan line shimmer — skip on mobile for perf */}
-        {!isMobile && (
+        {/* Scan line shimmer — high tier only */}
+        {config.scanLine && (
           <div
             className="absolute inset-x-0 top-0 h-[2px] pointer-events-none"
             style={{
@@ -403,7 +505,7 @@ function Homepage() {
         {/* ── Hero section ── */}
         <div className="flex-1 flex flex-col items-center justify-center px-6 md:px-12 lg:px-20 py-12 md:py-16 relative">
           {/* Floating particles */}
-          <FloatingParticles isMobile={isMobile} />
+          <FloatingParticles config={config} />
 
           {/* Bismillah with ring ornament */}
           <motion.div
@@ -418,7 +520,7 @@ function Homepage() {
             }}
             className="mb-6 text-center"
           >
-            <BismillahRing />
+            <BismillahRing animate={config.ringAnimation} />
             {/* Subtitle under Bismillah */}
             <motion.p
               initial={{ opacity: 0 }}
@@ -729,7 +831,7 @@ function Homepage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.0 }}
-            className="mt-14 text-center"
+            className="mt-14 text-center pb-safe"
           >
             <div className="flex items-center gap-3 justify-center text-text-secondary/15 text-xs mb-1">
               <div className="w-10 h-px bg-text-secondary/10" />

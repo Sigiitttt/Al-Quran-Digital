@@ -110,6 +110,39 @@ body::before {
 
 body {
   margin: 0;
+  overscroll-behavior-y: contain;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  /* Safe area insets for notched phones (iPhone X+, Samsung, Xiaomi, dll) */
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* ── Global touch & interaction optimizations ── */
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a, button, [role="button"], input, select, textarea {
+  touch-action: manipulation;  /* Eliminates 300ms tap delay on all mobile browsers */
+}
+
+button, [role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Sticky nav safe-area awareness for notched phones */
+.sticky {
+  padding-top: max(0px, env(safe-area-inset-top));
+}
+
+/* Bottom safe area for footer/fixed-bottom elements */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
 /* ══════════════════════════════════════ */
@@ -209,7 +242,9 @@ body {
   100%   { transform: translateY(-2px); opacity: 0; }
 }
 
-/* ── Reduced motion: disable all decorative animations ── */
+/* ══════════════════════════════════════ */
+/* ACCESSIBILITY: Reduced motion support  */
+/* ══════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -221,11 +256,71 @@ body {
   }
 }
 
-/* ── Mobile: lighten backdrop-filter for perf ── */
+/* ══════════════════════════════════════ */
+/* MOBILE DEVICE OPTIMIZATIONS            */
+/* ══════════════════════════════════════ */
+
+/* ── Phones (≤ 768px): lighter effects ── */
 @media (max-width: 768px) {
-  .homepage-card {
+  .homepage-card,
+  .doa-card,
+  .surah-card {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Disable heavy background blur on body */
+  body::before {
+    filter: blur(40px);
+  }
+
+  /* Simpler card hover (no transform on mobile — uses tap) */
+  .surah-card:hover,
+  .doa-card:hover {
+    transform: none;
+  }
+}
+
+/* ── Small phones (≤ 380px): extra light ── */
+@media (max-width: 380px) {
+  .homepage-card,
+  .doa-card,
+  .surah-card {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  body::before {
+    animation: none;
+    filter: blur(30px);
+  }
+}
+
+/* ── Touch devices: optimize for taps (not hover) ── */
+@media (hover: none) and (pointer: coarse) {
+  .surah-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .doa-card:hover {
+    box-shadow: none;
+  }
+  .homepage-card:hover {
+    transform: none;
+  }
+
+  /* Active states instead of hover for touch devices */
+  .surah-card:active {
+    transform: scale(0.98);
+    border-color: rgba(162, 69, 250, 0.25);
+  }
+  .doa-card:active {
+    transform: scale(0.98);
+    border-color: rgba(162, 69, 250, 0.25);
+  }
+  .homepage-card:active {
+    transform: scale(0.98);
+    border-color: rgba(162, 69, 250, 0.25);
   }
 }
 
